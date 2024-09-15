@@ -43,10 +43,10 @@ namespace BDTHPlugin.Interface.Components
           DrawDragCoord("##bdth-xdrag", ref Memory.position.X);
           DrawDragCoord("##bdth-ydrag", ref Memory.position.Y);
           DrawDragCoord("##bdth-zdrag", ref Memory.position.Z);
-          ImGui.Text("position");
+          ImGui.Text("位置");
 
           DrawDragRotate("##bdth-rydrag", ref Memory.rotation.Y);
-          ImGui.Text("rotation");
+          ImGui.Text("旋转");
         }
         ImGui.PopItemWidth();
       }
@@ -55,8 +55,8 @@ namespace BDTHPlugin.Interface.Components
       if (ImGui.IsItemHovered())
       {
         ImGui.BeginTooltip();
-        ImGui.Text("Click and drag each to move the selected item.");
-        ImGui.Text("Change the drag option below to influence how much it moves as you drag.");
+        ImGui.Text("选中并左右拖拽来移动所选对象。");
+        ImGui.Text("改变下面的拖拽值会影响拖拽的移动量。");
         ImGui.EndTooltip();
       }
 
@@ -69,7 +69,7 @@ namespace BDTHPlugin.Interface.Components
           copyRotation = Memory.rotation.Y;
         }
         if (ImGui.IsItemHovered())
-          ImGui.SetTooltip("Copy Position & Rotation");
+          ImGui.SetTooltip("复制位置和旋转角度");
 
         ImGui.BeginDisabled(copyPosition == null || copyRotation == null);
         {
@@ -79,17 +79,17 @@ namespace BDTHPlugin.Interface.Components
             Memory.WriteRotation(Memory.rotation with { Y = copyRotation.Value });
           }
           if (ImGui.IsItemHovered())
-            ImGui.SetTooltip("Paste Position & Rotation");
+            ImGui.SetTooltip("粘贴位置和旋转角度");
         }
         ImGui.EndDisabled();
       }
 
       ImGui.EndGroup();
 
-      DrawInputCoord("x coord##bdth-x", ref Memory.position.X, ref lockX);
-      DrawInputCoord("y coord##bdth-y", ref Memory.position.Y, ref lockY);
-      DrawInputCoord("z coord##bdth-z", ref Memory.position.Z, ref lockZ);
-      DrawInputRotate("ry degree##bdth-ry", ref Memory.rotation.Y);
+      DrawInputCoord("X 轴 ##bdth-x", ref Memory.position.X, ref lockX);
+      DrawInputCoord("Y 轴 ##bdth-y", ref Memory.position.Y, ref lockY);
+      DrawInputCoord("Z 轴 ##bdth-z", ref Memory.position.Z, ref lockZ);
+      DrawInputRotate("旋转角度 ##bdth-ry", ref Memory.rotation.Y);
     }
     
     private void HandleScrollInput(ref float f)

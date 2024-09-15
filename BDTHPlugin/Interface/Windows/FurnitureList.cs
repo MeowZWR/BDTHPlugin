@@ -15,7 +15,7 @@ namespace BDTHPlugin.Interface.Windows
     private ulong? lastActiveItem;
     private byte renderCount;
 
-    public FurnitureList() : base("Furnishing List")
+    public FurnitureList() : base("家具清单")
     {
 
     }
@@ -39,7 +39,7 @@ namespace BDTHPlugin.Interface.Windows
       };
 
       var sortByDistance = Configuration.SortByDistance;
-      if (ImGui.Checkbox("Sort by distance", ref sortByDistance))
+      if (ImGui.Checkbox("按距离排序", ref sortByDistance))
       {
         Configuration.SortByDistance = sortByDistance;
         Configuration.Save();

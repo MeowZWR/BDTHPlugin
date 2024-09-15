@@ -53,7 +53,7 @@ namespace BDTHPlugin
 
       CommandManager.AddHandler(commandName, new CommandInfo(OnCommand)
       {
-        HelpMessage = "Opens the controls for Burning Down the House plugin."
+        HelpMessage = "打开BDTH插件的控件面板。"
       });
 
       // Set the ImGui context 
@@ -153,7 +153,7 @@ namespace BDTHPlugin
             // Only allow furnishing list when the housing window is open.
             if (!Memory.IsHousingOpen())
             {
-              Chat.PrintError("Cannot open furnishing list unless housing menu is open.");
+              Chat.PrintError("不能打开家具清单，请进入房屋布置模式。");
               Ui.Furniture.IsOpen = false;
               return;
             }
@@ -161,7 +161,7 @@ namespace BDTHPlugin
             // Disallow the ability to open furnishing list outdoors.
             if (IsOutdoors())
             {
-              Chat.PrintError("Cannot open furnishing outdoors currently.");
+              Chat.PrintError("目前不能在室外使用这个功能。");
               Ui.Furniture.IsOpen = false;
               return;
             }
