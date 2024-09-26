@@ -42,7 +42,7 @@ jobs:
           Compress-Archive -Path "bin/*" -DestinationPath BDTHPlugin.zip
 
       - name: Upload artifact
-        uses: actions/upload-artifact@v2.2.1
+        uses: actions/upload-artifact@v4
         with:
           name: PluginZip
           path: BDTHPlugin.zip
