@@ -4,8 +4,8 @@ using System.Numerics;
 using Dalamud.Interface.Components;
 using Dalamud.Interface.Windowing;
 
-using ImGuiNET;
-using ImGuizmoNET;
+using Dalamud.Bindings.ImGui;
+using Dalamud.Bindings.ImGuizmo;
 
 using BDTHPlugin.Interface.Components;
 
@@ -78,12 +78,12 @@ namespace BDTHPlugin.Interface.Windows
       DrawTooltip("使坐标轴基于下面设置的网格值来进行精确移动（网格吸附）。");
 
       ImGui.SameLine();
-      if (ImGuiComponents.IconButton(1, Gizmo.Mode == MODE.LOCAL ? Dalamud.Interface.FontAwesomeIcon.ArrowsAlt : Dalamud.Interface.FontAwesomeIcon.Globe))
-        Gizmo.Mode = Gizmo.Mode == MODE.LOCAL ? MODE.WORLD : MODE.LOCAL;
+      if (ImGuiComponents.IconButton(1, Gizmo.Mode == ImGuizmoMode.Local ? Dalamud.Interface.FontAwesomeIcon.ArrowsAlt : Dalamud.Interface.FontAwesomeIcon.Globe))
+        Gizmo.Mode = Gizmo.Mode == ImGuizmoMode.Local ? ImGuizmoMode.World : ImGuizmoMode.Local;
 
       DrawTooltip(
       [
-        $"Mode: {(Gizmo.Mode == MODE.LOCAL ? "本地" : "世界")}",
+        $"模式：{(Gizmo.Mode == ImGuizmoMode.Local ? "本地" : "世界")}",
         "使坐标轴方向在本地坐标轴与世界坐标轴间切换。"
       ]);
 
@@ -113,7 +113,7 @@ namespace BDTHPlugin.Interface.Windows
       }
       DrawTooltip("设置家具移动的数值，也影响坐标轴的网格模式。");
 
-      var dummyHousingGoods = PluginMemory.HousingGoods != null && PluginMemory.HousingGoods->IsVisible;
+      var dummyHousingGoods = PluginMemory.HousingGoods != null && PluginMemory.HousingGoods.IsVisible;
       var dummyInventory = Memory.InventoryVisible;
 
       if (ImGui.Checkbox("显示家具设置界面   ", ref dummyHousingGoods))
