@@ -113,12 +113,12 @@ namespace BDTHPlugin.Interface.Windows
       }
       DrawTooltip("设置家具移动的数值，也影响坐标轴的网格模式。");
 
-      var dummyHousingGoods = PluginMemory.HousingGoods != null && PluginMemory.HousingGoods.IsVisible;
-      var dummyInventory = Memory.InventoryVisible;
+      var dummyHousingGoods = AtkManager.HousingGoods != null && AtkManager.HousingGoods.IsVisible;
+      var dummyInventory = AtkManager.InventoryVisible;
 
       if (ImGui.Checkbox("显示家具设置界面   ", ref dummyHousingGoods))
       {
-        Memory.ShowFurnishingList(dummyHousingGoods);
+        AtkManager.ShowFurnishingList(dummyHousingGoods);
 
         Configuration.DisplayFurnishingList = dummyHousingGoods;
         Configuration.Save();
@@ -127,7 +127,7 @@ namespace BDTHPlugin.Interface.Windows
 
       if (ImGui.Checkbox("显示物品栏界面", ref dummyInventory))
       {
-        Memory.ShowInventory(dummyInventory);
+        AtkManager.ShowInventory(dummyInventory);
 
         Configuration.DisplayInventory = dummyInventory;
         Configuration.Save();
@@ -165,7 +165,7 @@ namespace BDTHPlugin.Interface.Windows
       DrawTooltip([text]);
     }
 
-    private void DrawError(string text)
+    private static void DrawError(string text)
     {
       ImGui.PushStyleColor(ImGuiCol.Text, RED_COLOR);
       ImGui.Text(text);
