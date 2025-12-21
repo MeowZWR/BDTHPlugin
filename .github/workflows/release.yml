@@ -14,34 +14,89 @@ jobs:
         with:
           submodules: recursive
       - name: Setup .NET
-        uses: actions/setup-dotnet@v1
+        uses: actions/setup-dotnet@v5
         with:
-          dotnet-version: '9.x.x'
+          dotnet-version: '10.x.x'
       - name: Restore dependencies
         run: dotnet restore
       - name: Download Dalamud
         run: |
-          Invoke-WebRequest -Uri https://goatcorp.github.io/dalamud-distrib/latest.zip -OutFile latest.zip
+          Invoke-WebRequest -Uri https://goatcorp.github.io/dalamud-distrib/stg/latest.zip -OutFile latest.zip
           Expand-Archive -Force latest.zip "$env:AppData\XIVLauncher\addon\Hooks\dev"
       - name: Build
         run: |
           $ver = '${{ github.ref_name }}' -replace '-cn'
-          invoke-expression 'dotnet build --no-restore --configuration Release --nologo -p:Version=$ver -p:FileVersion=$ver -p:AssemblyVersion=$ver'
+          dotnet build --no-restore --configuration Release --nologo -p:Version=$ver -p:FileVersion=$ver -p:AssemblyVersion=$ver
+          if ($LASTEXITCODE -ne 0) {
+            throw "Build failed with exit code $LASTEXITCODE"
+          }
       - name: write version into jsons
         run: |
           $ver = '${{ github.ref_name }}' -replace '-cn'
           $path = './BDTHPlugin/bin/Release/BDTHPlugin.json'
+          if (-not (Test-Path $path)) {
+            Write-Host "File not found at $path, trying alternative locations..."
+            $altPaths = @(
+              './BDTHPlugin/bin/x64/Release/BDTHPlugin.json',
+              './BDTHPlugin/BDTHPlugin/bin/Release/BDTHPlugin.json',
+              './BDTHPlugin/BDTHPlugin/bin/x64/Release/BDTHPlugin.json'
+            )
+            $found = $false
+            foreach ($altPath in $altPaths) {
+              if (Test-Path $altPath) {
+                $path = $altPath
+                $found = $true
+                Write-Host "Found file at $path"
+                break
+              }
+            }
+            if (-not $found) {
+              Write-Host "Listing directory structure:"
+              Get-ChildItem -Path ./BDTHPlugin -Recurse -Filter BDTHPlugin.json | ForEach-Object { Write-Host $_.FullName }
+              throw "BDTHPlugin.json not found in any expected location"
+            }
+          }
           $json = Get-Content -Raw $path | ConvertFrom-Json
           $json.AssemblyVersion = $ver
           $content = $json | ConvertTo-Json
-          set-content -Path $path -Value $content
+          Set-Content -Path $path -Value $content
       - name: Archive
-        run: Compress-Archive -Path BDTHPlugin/bin/Release/* -DestinationPath BDTHPlugin.zip
+        run: |
+          $releasePaths = @(
+            './BDTHPlugin/bin/Release',
+            './BDTHPlugin/bin/x64/Release'
+          )
+          $foundPath = $null
+          foreach ($path in $releasePaths) {
+            if (Test-Path $path) {
+              $files = Get-ChildItem -Path $path -File
+              if ($files.Count -gt 0) {
+                $foundPath = $path
+                Write-Host "Found build output at: $path"
+                break
+              }
+            }
+          }
+          if (-not $foundPath) {
+            Write-Host "Listing directory structure:"
+            Get-ChildItem -Path ./BDTHPlugin -Recurse -Directory | ForEach-Object { Write-Host $_.FullName }
+            throw "Build output directory not found"
+          }
+          $files = Get-ChildItem -Path $foundPath -File
+          if ($files.Count -eq 0) {
+            throw "No files found in $foundPath"
+          }
+          Write-Host "Found $($files.Count) files to archive:"
+          $files | ForEach-Object { Write-Host "  $($_.FullName)" }
+          $filePaths = $files | ForEach-Object { $_.FullName }
+          Compress-Archive -Path $filePaths -DestinationPath BDTHPlugin.zip -Force
+          Write-Host "Archive created successfully"
       - name: Upload a Build Artifact
         uses: actions/upload-artifact@v4
         with:
           path: |
             ./BDTHPlugin/bin/Release/*
+            ./BDTHPlugin/bin/x64/Release/*
       - name: Create Release
         id: create_release
         uses: actions/create-release@v1
